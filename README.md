@@ -9,6 +9,17 @@ This app gives you **dinner/supper recipe ideas on your phone** using real recip
 - ✅ Ingredient measurements are shown in **metric where possible** (e.g., cups/tbsp/oz converted to ml/g).
 - ✅ It is responsive and easy to use on a phone screen.
 
+## Search improvements
+
+The app now uses an expanded search strategy so queries such as:
+- `pasta with chicken`
+- `ground beef`
+
+work better by trying:
+1. direct full-text search,
+2. keyword and phrase variations,
+3. ingredient-based matching with fallback lookups.
+
 ## Quick start (on your computer)
 
 1. Open a terminal in this project folder.
@@ -54,4 +65,4 @@ Example: `http://192.168.1.20:8080`
 ## Notes
 
 - Recipe data comes from TheMealDB API and includes source links from their dataset.
-- If a search has no linked results, try another ingredient or dish keyword.
+- If a search has no linked results, try broader ingredient names (for example `beef`, `chicken`, `pasta`, `curry`).

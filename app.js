@@ -4,6 +4,23 @@ const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 const recipeTemplate = document.getElementById("recipeTemplate");
 
+const API_BASE = "https://www.themealdb.com/api/json/v1/1";
+const MAX_RESULTS = 8;
+
+const TERM_SYNONYMS = {
+  ground: ["minced"],
+  minced: ["ground"],
+  beef: ["beef", "mince"],
+  chicken: ["chicken", "chicken_breast"],
+  pasta: ["pasta"],
+  pork: ["pork"],
+  turkey: ["turkey"],
+  rice: ["rice"],
+  curry: ["curry"],
+  tomato: ["tomato"],
+  potato: ["potato"],
+};
+
 searchBtn.addEventListener("click", () => loadRecipes(searchInput.value.trim()));
 searchInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
@@ -11,7 +28,7 @@ searchInput.addEventListener("keydown", (event) => {
   }
 });
 
-loadRecipes("chicken");
+loadRecipes("chicken pasta");
 
 async function loadRecipes(query) {
   const term = query || "dinner";
@@ -19,31 +36,23 @@ async function loadRecipes(query) {
   resultsEl.innerHTML = "";
 
   try {
-    const response = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(term)}`
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-    const allMeals = data.meals || [];
-
-    const mealsWithLinks = allMeals.filter((meal) => meal.strSource || meal.strYoutube);
+    const meals = await findMeals(term);
+    const mealsWithLinks = meals.filter((meal) => meal.strSource || meal.strYoutube);
 
     if (!mealsWithLinks.length) {
       setStatus(
-        "No linked recipes found for that search. Try another ingredient or dish name."
+        "No linked recipes found for that search. Try broader words (example: chicken pasta, beef mince, curry)."
       );
       return;
     }
 
+    mealsWithLinks.slice(0, MAX_RESULTS).forEach((meal) => {
     mealsWithLinks.slice(0, 6).forEach((meal) => {
       resultsEl.appendChild(renderMeal(meal));
     });
 
     setStatus(
+      `Showing ${Math.min(MAX_RESULTS, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
       `Showing ${Math.min(6, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
     );
   } catch (error) {
@@ -52,6 +61,102 @@ async function loadRecipes(query) {
     );
     console.error(error);
   }
+}
+
+async function findMeals(rawQuery) {
+  const normalized = rawQuery.toLowerCase().trim();
+  const searchTerms = buildSearchTerms(normalized);
+
+  const mealById = new Map();
+
+  // 1) Direct full-text search first.
+  await addMealsFromNameSearch(normalized, mealById);
+
+  // 2) Expanded name searches (words + phrase chunks + synonyms).
+  for (const term of searchTerms) {
+    if (mealById.size >= MAX_RESULTS * 2) break;
+    await addMealsFromNameSearch(term, mealById);
+  }
+
+  // 3) Ingredient-based fallback for compound queries like "pasta with chicken".
+  for (const ingredient of searchTerms) {
+    if (mealById.size >= MAX_RESULTS * 2) break;
+    await addMealsFromIngredientSearch(ingredient, mealById);
+  }
+
+  return [...mealById.values()];
+}
+
+function buildSearchTerms(query) {
+  const terms = new Set();
+  const cleaned = query
+    .replace(/\b(with|and|for|recipe|recipes|idea|ideas|dinner|supper)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (cleaned) terms.add(cleaned);
+
+  const words = cleaned.split(" ").filter(Boolean);
+  words.forEach((word) => {
+    terms.add(word);
+    (TERM_SYNONYMS[word] || []).forEach((synonym) => terms.add(synonym));
+  });
+
+  if (words.length >= 2) {
+    for (let i = 0; i < words.length - 1; i += 1) {
+      terms.add(`${words[i]} ${words[i + 1]}`);
+    }
+  }
+
+  if (words.includes("ground") && words.includes("beef")) {
+    terms.add("beef mince");
+    terms.add("mince");
+  }
+
+  if (words.includes("pasta") && words.includes("chicken")) {
+    terms.add("chicken pasta");
+    terms.add("chicken");
+    terms.add("pasta");
+  }
+
+  return [...terms].filter((term) => term.length > 1);
+}
+
+async function addMealsFromNameSearch(term, mealById) {
+  const data = await fetchJson(`${API_BASE}/search.php?s=${encodeURIComponent(term)}`);
+  const meals = data?.meals || [];
+
+  meals.forEach((meal) => {
+    mealById.set(meal.idMeal, meal);
+  });
+}
+
+async function addMealsFromIngredientSearch(ingredient, mealById) {
+  const data = await fetchJson(
+    `${API_BASE}/filter.php?i=${encodeURIComponent(ingredient)}`
+  );
+
+  const matches = data?.meals || [];
+
+  const detailPromises = matches.slice(0, 8).map((match) =>
+    fetchJson(`${API_BASE}/lookup.php?i=${encodeURIComponent(match.idMeal)}`)
+  );
+
+  const detailResults = await Promise.all(detailPromises);
+  detailResults.forEach((detailData) => {
+    const meal = detailData?.meals?.[0];
+    if (meal) {
+      mealById.set(meal.idMeal, meal);
+    }
+  });
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} for ${url}`);
+  }
+  return response.json();
 }
 
 function renderMeal(meal) {
