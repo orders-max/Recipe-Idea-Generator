@@ -47,11 +47,13 @@ async function loadRecipes(query) {
     }
 
     mealsWithLinks.slice(0, MAX_RESULTS).forEach((meal) => {
+    mealsWithLinks.slice(0, 6).forEach((meal) => {
       resultsEl.appendChild(renderMeal(meal));
     });
 
     setStatus(
       `Showing ${Math.min(MAX_RESULTS, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
+      `Showing ${Math.min(6, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
     );
   } catch (error) {
     setStatus(
