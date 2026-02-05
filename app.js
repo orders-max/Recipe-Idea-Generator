@@ -6,9 +6,6 @@ const recipeTemplate = document.getElementById("recipeTemplate");
 
 const API_BASE = "https://www.themealdb.com/api/json/v1/1";
 const MAX_RESULTS = 8;
-const RECOMMENDED_COUNT = 6;
-
-let activeRequestId = 0;
 
 const TERM_SYNONYMS = {
   ground: ["minced"],
@@ -31,70 +28,15 @@ searchInput.addEventListener("keydown", (event) => {
   }
 });
 
-loadRecommendedRecipes();
-
-async function loadRecommendedRecipes() {
-  const requestId = ++activeRequestId;
-  setStatus("Loading 6 random recommended dinner recipes…");
-  resultsEl.innerHTML = "";
-  resultsEl.classList.add("results--recommended");
-
-  try {
-    const recommended = await getRandomMeals(RECOMMENDED_COUNT);
-    if (requestId !== activeRequestId) return;
-
-    const linkedMeals = recommended
-      .map((meal) => ({ ...meal, resolvedSource: getRecipeSourceUrl(meal) }))
-      .filter((meal) => Boolean(meal.resolvedSource));
-
-    if (!linkedMeals.length) {
-      setStatus("Could not load recommendations right now. Try searching instead.");
-      return;
-    }
-
-    const shown = linkedMeals.slice(0, RECOMMENDED_COUNT);
-    shown.forEach((meal) => {
-      resultsEl.appendChild(renderMeal(meal, { compact: true }));
-    });
-
-    setStatus(`Recommended for you: ${shown.length} random real recipe(s).`);
-  } catch (error) {
-    if (requestId !== activeRequestId) return;
-    setStatus("Could not load recommendations right now. Please try again.");
-    console.error(error);
-  }
-}
-
-async function getRandomMeals(count) {
-  const mealById = new Map();
-  const attempts = Math.max(count * 4, 24);
-
-  for (let i = 0; i < attempts; i += 1) {
-    if (mealById.size >= count) break;
-
-    try {
-      const data = await fetchJson(`${API_BASE}/random.php`);
-      const meal = data?.meals?.[0];
-      if (meal) mealById.set(meal.idMeal, meal);
-    } catch (error) {
-      console.warn("Random recipe fetch failed", error);
-    }
-  }
-
-  return [...mealById.values()].slice(0, count);
-}
+loadRecipes("chicken pasta");
 
 async function loadRecipes(query) {
-  const requestId = ++activeRequestId;
   const term = query || "dinner";
   setStatus(`Loading recipe ideas for “${term}”…`);
   resultsEl.innerHTML = "";
-  resultsEl.classList.remove("results--recommended");
 
   try {
     const meals = await findMeals(term);
-    if (requestId !== activeRequestId) return;
-
     const linkedMeals = meals
       .map((meal) => ({ ...meal, resolvedSource: getRecipeSourceUrl(meal) }))
       .filter((meal) => Boolean(meal.resolvedSource));
@@ -102,19 +44,27 @@ async function loadRecipes(query) {
     if (!linkedMeals.length) {
       setStatus(
         "No linked recipes found for that search. Try broader words (example: chicken pasta, beef, curry)."
+    const mealsWithLinks = meals.filter((meal) => meal.strSource || meal.strYoutube);
+
+    if (!mealsWithLinks.length) {
+      setStatus(
+        "No linked recipes found for that search. Try broader words (example: chicken pasta, beef mince, curry)."
       );
       return;
     }
 
     linkedMeals.slice(0, MAX_RESULTS).forEach((meal) => {
+    mealsWithLinks.slice(0, MAX_RESULTS).forEach((meal) => {
+    mealsWithLinks.slice(0, 6).forEach((meal) => {
       resultsEl.appendChild(renderMeal(meal));
     });
 
     setStatus(
       `Showing ${Math.min(MAX_RESULTS, linkedMeals.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
+      `Showing ${Math.min(MAX_RESULTS, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
+      `Showing ${Math.min(6, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
     );
   } catch (error) {
-    if (requestId !== activeRequestId) return;
     setStatus(
       "Could not load recipes right now. Please check your connection and try again."
     );
@@ -127,13 +77,17 @@ async function findMeals(rawQuery) {
   const searchTerms = buildSearchTerms(normalized);
 
   const mealById = new Map();
+
+  // 1) Direct full-text search first.
   await addMealsFromNameSearch(normalized, mealById);
 
+  // 2) Expanded name searches (words + phrase chunks + synonyms).
   for (const term of searchTerms) {
     if (mealById.size >= MAX_RESULTS * 2) break;
     await addMealsFromNameSearch(term, mealById);
   }
 
+  // 3) Ingredient-based fallback for compound queries like "pasta with chicken".
   for (const ingredient of searchTerms) {
     if (mealById.size >= MAX_RESULTS * 2) break;
     await addMealsFromIngredientSearch(ingredient, mealById);
@@ -180,7 +134,10 @@ function buildSearchTerms(query) {
 async function addMealsFromNameSearch(term, mealById) {
   const data = await fetchJson(`${API_BASE}/search.php?s=${encodeURIComponent(term)}`);
   const meals = data?.meals || [];
-  meals.forEach((meal) => mealById.set(meal.idMeal, meal));
+
+  meals.forEach((meal) => {
+    mealById.set(meal.idMeal, meal);
+  });
 }
 
 async function addMealsFromIngredientSearch(ingredient, mealById) {
@@ -189,6 +146,7 @@ async function addMealsFromIngredientSearch(ingredient, mealById) {
   );
 
   const matches = data?.meals || [];
+
   const detailPromises = matches.slice(0, 8).map((match) =>
     fetchJson(`${API_BASE}/lookup.php?i=${encodeURIComponent(match.idMeal)}`)
   );
@@ -196,7 +154,9 @@ async function addMealsFromIngredientSearch(ingredient, mealById) {
   const detailResults = await Promise.all(detailPromises);
   detailResults.forEach((detailData) => {
     const meal = detailData?.meals?.[0];
-    if (meal) mealById.set(meal.idMeal, meal);
+    if (meal) {
+      mealById.set(meal.idMeal, meal);
+    }
   });
 }
 
@@ -208,6 +168,7 @@ async function fetchJson(url) {
   return response.json();
 }
 
+
 function getRecipeSourceUrl(meal) {
   if (meal.strSource) return meal.strSource;
   if (meal.strYoutube) return meal.strYoutube;
@@ -215,12 +176,8 @@ function getRecipeSourceUrl(meal) {
   return "";
 }
 
-function renderMeal(meal, options = {}) {
-  const { compact = false } = options;
+function renderMeal(meal) {
   const clone = recipeTemplate.content.cloneNode(true);
-
-  const card = clone.querySelector(".recipe-card");
-  if (compact) card.classList.add("recipe-card--compact");
 
   clone.querySelector(".recipe-image").src = meal.strMealThumb;
   clone.querySelector(".recipe-image").alt = meal.strMeal;
@@ -245,6 +202,7 @@ function renderMeal(meal, options = {}) {
 
   const sourceLink = clone.querySelector(".source-link");
   sourceLink.href = meal.resolvedSource || getRecipeSourceUrl(meal);
+  sourceLink.href = meal.strSource || meal.strYoutube;
 
   return clone;
 }

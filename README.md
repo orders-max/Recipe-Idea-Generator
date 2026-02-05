@@ -6,15 +6,9 @@ This app gives you **dinner/supper recipe ideas on your phone** using real recip
 
 - ✅ It **does not invent recipes**.
 - ✅ It only shows recipe results that include a **source link** (original source, YouTube, or TheMealDB recipe page).
+- ✅ It only shows recipe results that include an **external source link** (website or video).
 - ✅ Ingredient measurements are shown in **metric where possible** (e.g., cups/tbsp/oz converted to ml/g).
 - ✅ It is responsive and easy to use on a phone screen.
-
-
-## Home recommendations
-
-- On first load, the app now shows **6 random recommended recipes**.
-- These are displayed in a **3 × 2 card grid** for quick browsing on mobile.
-- Each card keeps a working source link (original source, YouTube, or TheMealDB page).
 
 ## Search improvements
 
@@ -72,4 +66,5 @@ Example: `http://192.168.1.20:8080`
 ## Notes
 
 - Recipe data comes from TheMealDB API; links are resolved to original source URL, YouTube, or the meal page on TheMealDB when needed so every card has a clickable recipe link.
+- Recipe data comes from TheMealDB API and includes source links from their dataset.
 - If a search has no linked results, try broader ingredient names (for example `beef`, `chicken`, `pasta`, `curry`).
