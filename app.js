@@ -37,6 +37,13 @@ async function loadRecipes(query) {
 
   try {
     const meals = await findMeals(term);
+    const linkedMeals = meals
+      .map((meal) => ({ ...meal, resolvedSource: getRecipeSourceUrl(meal) }))
+      .filter((meal) => Boolean(meal.resolvedSource));
+
+    if (!linkedMeals.length) {
+      setStatus(
+        "No linked recipes found for that search. Try broader words (example: chicken pasta, beef, curry)."
     const mealsWithLinks = meals.filter((meal) => meal.strSource || meal.strYoutube);
 
     if (!mealsWithLinks.length) {
@@ -46,12 +53,14 @@ async function loadRecipes(query) {
       return;
     }
 
+    linkedMeals.slice(0, MAX_RESULTS).forEach((meal) => {
     mealsWithLinks.slice(0, MAX_RESULTS).forEach((meal) => {
     mealsWithLinks.slice(0, 6).forEach((meal) => {
       resultsEl.appendChild(renderMeal(meal));
     });
 
     setStatus(
+      `Showing ${Math.min(MAX_RESULTS, linkedMeals.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
       `Showing ${Math.min(MAX_RESULTS, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
       `Showing ${Math.min(6, mealsWithLinks.length)} linked recipe idea(s). Ingredient amounts are shown in metric where possible.`
     );
@@ -159,6 +168,14 @@ async function fetchJson(url) {
   return response.json();
 }
 
+
+function getRecipeSourceUrl(meal) {
+  if (meal.strSource) return meal.strSource;
+  if (meal.strYoutube) return meal.strYoutube;
+  if (meal.idMeal) return `https://www.themealdb.com/meal/${meal.idMeal}`;
+  return "";
+}
+
 function renderMeal(meal) {
   const clone = recipeTemplate.content.cloneNode(true);
 
@@ -184,6 +201,7 @@ function renderMeal(meal) {
   });
 
   const sourceLink = clone.querySelector(".source-link");
+  sourceLink.href = meal.resolvedSource || getRecipeSourceUrl(meal);
   sourceLink.href = meal.strSource || meal.strYoutube;
 
   return clone;
