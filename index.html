@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dinner/Supper Recipe Idea Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>Dinner/Supper Recipe Idea Generator</h1>
+        <p>
+          Real recipes only, pulled from existing cooking sites. Every result includes a source link and metric-friendly ingredient amounts.
+        </p>
+      </header>
+
+      <section class="search-panel" aria-label="Recipe search">
+        <label for="searchInput">What are you in the mood for?</label>
+        <div class="search-row">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Try: pasta with chicken, ground beef, curry..."
+            autocomplete="off"
+          />
+          <button id="searchBtn" type="button">Get Ideas</button>
+        </div>
+        <p class="note">
+          We only show recipes with a working source link (original site, video, or TheMealDB page), and we never invent recipe steps.
+        </p>
+      </section>
+
+      <section id="status" class="status" aria-live="polite"></section>
+      <section id="results" class="results" aria-label="Recipe ideas"></section>
+    </main>
+
+    <template id="recipeTemplate">
+      <article class="recipe-card">
+        <img class="recipe-image" alt="" />
+        <div class="recipe-content">
+          <h2 class="recipe-title"></h2>
+          <p class="recipe-meta"></p>
+
+          <h3>Metric Ingredients</h3>
+          <ul class="ingredients"></ul>
+
+          <h3>Method (from source)</h3>
+          <ol class="steps"></ol>
+
+          <p>
+            <a class="source-link" target="_blank" rel="noopener noreferrer">View original recipe</a>
+          </p>
+        </div>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
