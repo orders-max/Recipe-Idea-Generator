@@ -12,23 +12,9 @@ This app gives you **dinner/supper recipe ideas on your phone** using real recip
 
 ## Home recommendations
 
-- On first load, the app now shows up to **6 weeknight-friendly recommendations**.
-- Recommendations pass strict weeknight pre-filters (protein-focused, budget-aware, niche/specialty exclusions unless explicitly requested).
-- Cards are chosen with variety across proteins and meal formats where possible, in a **3 × 2 card grid** for mobile.
+- On first load, the app now shows **6 random recommended recipes**.
+- These are displayed in a **3 × 2 card grid** for quick browsing on mobile.
 - Each card keeps a working source link (original source, YouTube, or TheMealDB page).
-- If fewer than 6 strict matches are available, the app shows the best available set and explains that in the status message.
-
-## Mobile filter chips (saved on your phone/browser)
-
-Above results, the app now has quick filter chips:
-- Under 30 min
-- One-pot
-- Budget mode
-- Exclude seafood
-- Comfort classics only
-- Protein quick filters: chicken / beef / pork / turkey / sausage
-
-These filters apply to both first-load recommendations and search results, and are persisted in `localStorage` so your choices stay on refresh.
 
 ## Search improvements
 
@@ -40,38 +26,6 @@ work better by trying:
 1. direct full-text search,
 2. keyword and phrase variations,
 3. ingredient-based matching with fallback lookups.
-4. ingredient-intent ranking so multi-ingredient searches (e.g. `chicken pasta`, `rice ground beef`) prioritize recipes containing all requested ingredients.
-5. strict multi-ingredient intent mode: when multiple ingredients are requested, the app now avoids showing unrelated single-ingredient results; if no exact linked match exists in the source dataset, it tells you clearly instead of showing mismatched recipes.
-
-
-
-## Empty-state help
-
-When strict filters remove all matches, the app now shows:
-- a short reason
-- 2–3 quick suggestions to broaden results
-- a one-tap **Show relaxed matches** button to temporarily relax strict filtering
-
-## Weighted ranking + debug toggle
-
-Search ranking now uses weighted scores in `app.js` under `RANKING_CONFIG`:
-- familiarity
-- budget proxy
-- simplicity
-- query intent
-
-For development debugging, set `RANKING_CONFIG.debugScoreBreakdown = true` to log score breakdown tables in the browser console.
-
-## Editing allow/block filter lists
-
-The strict weeknight pre-filters live in `app.js` under:
-
-- `RECIPE_FILTER_CONFIG.allowedProteinTerms`
-- `RECIPE_FILTER_CONFIG.blockedExpensiveTerms`
-- `RECIPE_FILTER_CONFIG.blockedNicheTerms`
-- `RECIPE_FILTER_CONFIG.preferredDinnerFormats`
-
-You can edit these arrays directly to tune which recipes are included/excluded.
 
 
 ## If merges break JavaScript
