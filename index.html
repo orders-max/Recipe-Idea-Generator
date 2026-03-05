@@ -8,10 +8,15 @@
   </head>
   <body>
     <main class="app">
-      <header>
-        <h1>Dinner/Supper Recipe Idea Generator</h1>
+      <header class="app-header">
+        <div class="header-top-row">
+          <h1>Dinner/Supper Recipe Idea Generator</h1>
+          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+            🌙 Dark mode
+          </button>
+        </div>
         <p>
-          Real recipes only, pulled from existing cooking sites. Every result includes a source link and metric-friendly ingredient amounts.
+          Practical weeknight dinner ideas only: real recipes from existing cooking sites, each with a source link and metric-friendly ingredient amounts.
         </p>
       </header>
 
@@ -26,13 +31,45 @@
           />
           <button id="searchBtn" type="button">Get Ideas</button>
         </div>
+        <div class="search-options-row">
+          <label for="resultLimit">Results to show</label>
+          <select id="resultLimit" aria-label="Search result limit">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="100">100</option>
+          </select>
+        </div>
         <p class="note">
-          We only show recipes with a working source link (original site, video, or TheMealDB page), and we never invent recipe steps.
+          Built for practical weeknight dinners: we only show recipes with a working source link (original site, video, or TheMealDB page), and we never invent recipe steps.
         </p>
+      </section>
+
+
+      <section class="filter-panel" aria-label="Quick filters">
+        <p class="filter-title">Quick filters</p>
+        <div class="chips" id="filterChips">
+          <button class="chip" type="button" data-filter-key="under30">Under 30 min</button>
+          <button class="chip" type="button" data-filter-key="onePot">One-pot</button>
+          <button class="chip" type="button" data-filter-key="budgetMode">Budget mode</button>
+          <button class="chip" type="button" data-filter-key="excludeSeafood">Exclude seafood</button>
+          <button class="chip" type="button" data-filter-key="comfortClassicsOnly">Comfort classics only</button>
+        </div>
+        <p class="filter-title">Protein</p>
+        <div class="chips" id="proteinChips">
+          <button class="chip" type="button" data-protein-key="chicken">Chicken</button>
+          <button class="chip" type="button" data-protein-key="beef">Beef</button>
+          <button class="chip" type="button" data-protein-key="pork">Pork</button>
+          <button class="chip" type="button" data-protein-key="turkey">Turkey</button>
+          <button class="chip" type="button" data-protein-key="sausage">Sausage</button>
+        </div>
       </section>
 
       <section id="status" class="status" aria-live="polite"></section>
       <section id="results" class="results" aria-label="Recipe ideas"></section>
+      <footer class="app-footer" aria-label="Build info">
+        <small id="buildStamp" class="build-stamp"></small>
+      </footer>
     </main>
 
     <template id="recipeTemplate">
