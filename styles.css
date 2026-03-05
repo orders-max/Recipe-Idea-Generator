@@ -77,57 +77,6 @@ button:hover {
   cursor: pointer;
 }
 
-
-.filter-panel {
-  margin-top: 0.9rem;
-}
-
-.filter-title {
-  margin: 0.4rem 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.chip {
-  border: 1px solid var(--border);
-  background: #f8fafc;
-  color: var(--text);
-  border-radius: 999px;
-  padding: 0.4rem 0.7rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.chip.is-active {
-  background: #e0f2fe;
-  border-color: #7dd3fc;
-  color: #075985;
-}
-
-.search-options-row {
-  margin-top: 0.6rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.search-options-row select {
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.35rem 0.45rem;
-  background: #fff;
-  color: var(--text);
-}
-
 .note,
 .status {
   color: var(--muted);
@@ -136,30 +85,6 @@ button:hover {
 
 .status {
   margin: 1rem 0;
-}
-
-
-.status-reason {
-  margin: 0.2rem 0 0.4rem;
-}
-
-.status-suggestions {
-  margin: 0.25rem 0 0.6rem;
-  padding-left: 1.2rem;
-}
-
-.status-relax-btn {
-  background: #e0f2fe;
-  color: #075985;
-  border: 1px solid #7dd3fc;
-  border-radius: 0.7rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.status-relax-btn:hover {
-  background: #bae6fd;
 }
 
 .results {
@@ -243,16 +168,6 @@ button:hover {
 
   .search-row {
     grid-template-columns: 1fr;
-  }
-
-  .search-options-row {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .search-options-row select {
-    min-width: 5rem;
   }
 
   button {
