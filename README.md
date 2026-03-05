@@ -12,23 +12,9 @@ This app gives you **dinner/supper recipe ideas on your phone** using real recip
 
 ## Home recommendations
 
-- On first load, the app now shows up to **6 weeknight-friendly recommendations**.
-- Recommendations pass strict weeknight pre-filters (protein-focused, budget-aware, niche/specialty exclusions unless explicitly requested).
-- Cards are chosen with variety across proteins and meal formats where possible, in a **3 × 2 card grid** for mobile.
+- On first load, the app now shows **6 random recommended recipes**.
+- These are displayed in a **3 × 2 card grid** for quick browsing on mobile.
 - Each card keeps a working source link (original source, YouTube, or TheMealDB page).
-- If fewer than 6 strict matches are available, the app shows the best available set and explains that in the status message.
-
-## Mobile filter chips (saved on your phone/browser)
-
-Above results, the app now has quick filter chips:
-- Under 30 min
-- One-pot
-- Budget mode
-- Exclude seafood
-- Comfort classics only
-- Protein quick filters: chicken / beef / pork / turkey / sausage
-
-These filters apply to both first-load recommendations and search results, and are persisted in `localStorage` so your choices stay on refresh.
 
 ## Search improvements
 
@@ -40,38 +26,6 @@ work better by trying:
 1. direct full-text search,
 2. keyword and phrase variations,
 3. ingredient-based matching with fallback lookups.
-4. ingredient-intent ranking so multi-ingredient searches (e.g. `chicken pasta`, `rice ground beef`) prioritize recipes containing all requested ingredients.
-5. strict multi-ingredient intent mode: when multiple ingredients are requested, the app now avoids showing unrelated single-ingredient results; if no exact linked match exists in the source dataset, it tells you clearly instead of showing mismatched recipes.
-
-
-
-## Empty-state help
-
-When strict filters remove all matches, the app now shows:
-- a short reason
-- 2–3 quick suggestions to broaden results
-- a one-tap **Show relaxed matches** button to temporarily relax strict filtering
-
-## Weighted ranking + debug toggle
-
-Search ranking now uses weighted scores in `app.js` under `RANKING_CONFIG`:
-- familiarity
-- budget proxy
-- simplicity
-- query intent
-
-For development debugging, set `RANKING_CONFIG.debugScoreBreakdown = true` to log score breakdown tables in the browser console.
-
-## Editing allow/block filter lists
-
-The strict weeknight pre-filters live in `app.js` under:
-
-- `RECIPE_FILTER_CONFIG.allowedProteinTerms`
-- `RECIPE_FILTER_CONFIG.blockedExpensiveTerms`
-- `RECIPE_FILTER_CONFIG.blockedNicheTerms`
-- `RECIPE_FILTER_CONFIG.preferredDinnerFormats`
-
-You can edit these arrays directly to tune which recipes are included/excluded.
 
 
 ## If merges break JavaScript
@@ -88,62 +42,6 @@ rg -n "<<<<<<<|=======|>>>>>>>" app.js index.html styles.css README.md
 If either check fails, fix the conflict result before pushing.
 
 Also, `chrome-extension://...` errors (for example from extensions like intent reporters) are browser-extension errors, not app code errors.
-
-## Codex PR workflow (prevents “merged but nothing changed”)
-
-Follow this exact workflow for Codex-generated PRs to avoid no-op merges.
-
-### 1) Do not resolve big conflicts in GitHub web editor
-
-If there are heavy conflicts, resolve locally so you can verify the final diff before merge.
-
-### 2) Before merging any PR, check **Files changed**
-
-- If **Files changed** shows expected edits, continue.
-- If it shows **0 files changed**, do **not** merge. Close and regenerate the PR.
-
-### 3) If conflicts exist, resolve locally and verify non-empty diff
-
-```bash
-git fetch origin
-git checkout <codex-branch>
-git merge origin/main
-
-# If you want Codex branch content to win during this merge direction:
-git checkout --ours .
-git add -A
-git commit -m "Resolve conflicts (keep Codex branch version)"
-```
-
-Important during `git merge origin/main` while on the Codex branch:
-- `--ours` = Codex branch
-- `--theirs` = `main`
-
-Now prove the PR still has real changes:
-
-```bash
-git diff origin/main...HEAD
-```
-
-If diff is empty, the PR is a no-op and should be closed/regenerated.
-
-### 4) Best prevention: branch from latest `main`
-
-```bash
-git checkout main
-git pull
-git checkout -b codex/<something>
-```
-
-If Codex generates branches automatically, rerun it only after updating `main`.
-
-### Practical rule set
-
-- Merge only when **Files changed** shows the expected edits.
-- Prefer rebase/regenerate over web conflict resolution.
-- If you resolve conflicts, always run `git diff origin/main...HEAD` before opening/merging.
-- If PR shows **0 files changed**, close and redo.
-
 
 ## Quick start (on your computer)
 

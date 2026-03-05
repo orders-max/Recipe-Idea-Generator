@@ -1,31 +1,12 @@
 :root {
   color-scheme: light;
-  --bg: #f3f5ff;
-  --bg-elevated: #eef2ff;
+  --bg: #f8fafc;
   --panel: #ffffff;
-  --panel-soft: #f8faff;
   --text: #0f172a;
-  --muted: #4b5563;
-  --border: #d9e1ee;
-  --accent: #6366f1;
-  --accent-strong: #4f46e5;
-  --accent-soft: #e0e7ff;
-  --shadow: 0 18px 34px rgb(15 23 42 / 10%);
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #090f1d;
-  --bg-elevated: #111a30;
-  --panel: #121b30;
-  --panel-soft: #18233d;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --border: #24314d;
-  --accent: #7c83ff;
-  --accent-strong: #9aa0ff;
-  --accent-soft: #232f59;
-  --shadow: 0 20px 40px rgb(0 0 0 / 35%);
+  --muted: #475569;
+  --border: #dbe4ee;
+  --accent: #0ea5e9;
+  --accent-strong: #0284c7;
 }
 
 * {
@@ -34,155 +15,66 @@
 
 body {
   margin: 0;
-  font-family: "Inter", "Segoe UI", "SF Pro Text", "Roboto", system-ui, -apple-system, sans-serif;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 16%, transparent), transparent 45%),
-    linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg) 36%);
-  min-height: 100vh;
+  background: linear-gradient(180deg, #e0f2fe 0%, var(--bg) 35%);
 }
 
 .app {
-  width: min(1040px, 92vw);
+  width: min(980px, 92vw);
   margin: 0 auto;
-  padding: 1.1rem 0 2.4rem;
-}
-
-.app-header {
-  margin-bottom: 1rem;
-}
-
-.header-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.9rem;
+  padding: 1rem 0 2rem;
 }
 
 header h1 {
-  margin: 0;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  font-size: clamp(1.5rem, 2vw + 1rem, 2.3rem);
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.2rem);
 }
 
 header p {
-  margin: 0.55rem 0 0;
+  margin-top: 0;
   color: var(--muted);
-  max-width: 70ch;
-  line-height: 1.5;
-}
-
-.theme-toggle {
-  border: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.search-panel,
-.filter-panel,
-.recipe-card {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: var(--shadow);
 }
 
 .search-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
   padding: 1rem;
-}
-
-.search-panel label,
-.filter-title {
-  font-weight: 700;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 8%);
 }
 
 .search-row {
-  margin-top: 0.55rem;
+  margin-top: 0.5rem;
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 
 input,
-button,
-select {
+button {
   font: inherit;
 }
 
-input,
-.search-options-row select {
+input {
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: 0.7rem;
   padding: 0.8rem;
   width: 100%;
-  background: var(--panel-soft);
-  color: var(--text);
 }
 
 button {
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  background: var(--accent);
   color: #fff;
   border: 0;
-  border-radius: 0.75rem;
+  border-radius: 0.7rem;
   padding: 0.8rem 1rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 button:hover {
-  filter: brightness(1.07);
+  background: var(--accent-strong);
   cursor: pointer;
-}
-
-.filter-panel {
-  margin-top: 0.9rem;
-  padding: 0.9rem;
-}
-
-.filter-title {
-  margin: 0.35rem 0;
-  font-size: 0.84rem;
-  color: var(--muted);
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.chip {
-  border: 1px solid var(--border);
-  background: var(--panel-soft);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 0.42rem 0.72rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.chip.is-active {
-  background: var(--accent-soft);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  color: color-mix(in srgb, var(--accent) 65%, white);
-}
-
-.search-options-row {
-  margin-top: 0.62rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.search-options-row select {
-  padding: 0.45rem 0.55rem;
 }
 
 .note,
@@ -195,25 +87,6 @@ button:hover {
   margin: 1rem 0;
 }
 
-.status-reason {
-  margin: 0.2rem 0 0.4rem;
-}
-
-.status-suggestions {
-  margin: 0.25rem 0 0.6rem;
-  padding-left: 1.2rem;
-}
-
-.status-relax-btn {
-  background: var(--accent-soft);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 0.7rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
 .results {
   display: grid;
   gap: 1rem;
@@ -224,19 +97,18 @@ button:hover {
 }
 
 .recipe-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
   overflow: hidden;
-  transition: transform 140ms ease, box-shadow 140ms ease;
-}
-
-.recipe-card:hover {
-  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgb(15 23 42 / 8%);
 }
 
 .recipe-image {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  background: #22304a;
+  background: #e2e8f0;
 }
 
 .recipe-content {
@@ -245,13 +117,11 @@ button:hover {
 
 .recipe-title {
   margin: 0;
-  letter-spacing: -0.015em;
 }
 
 .recipe-meta {
   color: var(--muted);
   margin-top: 0.3rem;
-  font-size: 0.92rem;
 }
 
 .ingredients,
@@ -260,8 +130,7 @@ button:hover {
 }
 
 .source-link {
-  font-weight: 700;
-  color: var(--accent);
+  font-weight: 600;
 }
 
 .recipe-card--compact .recipe-content {
@@ -292,32 +161,13 @@ button:hover {
   font-size: 0.78rem;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   .app {
     width: 94vw;
   }
 
-  .header-top-row {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .theme-toggle {
-    width: fit-content;
-  }
-
   .search-row {
     grid-template-columns: 1fr;
-  }
-
-  .search-options-row {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .search-options-row select {
-    min-width: 5rem;
   }
 
   button {
@@ -325,10 +175,6 @@ button:hover {
   }
 
   .results {
-    gap: 0.65rem;
-  }
-
-  .results--recommended {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
   }
 }
